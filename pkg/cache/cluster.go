@@ -149,6 +149,8 @@ type ListRetryFunc func(err error) bool
 
 // NewClusterCache creates new instance of cluster cache
 func NewClusterCache(config *rest.Config, opts ...UpdateSettingsFunc) *clusterCache {
+		fmt.Printf("INSIDE NewClusterCache FUNCTION ")
+
 	log := textlogger.NewLogger(textlogger.NewConfig())
 	cache := &clusterCache{
 		settings:           Settings{ResourceHealthOverride: &noopSettings{}, ResourcesFilter: &noopSettings{}},
@@ -818,6 +820,8 @@ func (c *clusterCache) checkPermission(ctx context.Context, reviewInterface auth
 // When this function exits, the cluster cache is up to date, and the appropriate resources are being watched for
 // changes.
 func (c *clusterCache) sync() error {
+		fmt.Printf("INSIDE sync FUNCTION ")
+
 	c.log.Info("Start syncing cluster")
 
 	for i := range c.apisMeta {
@@ -928,6 +932,8 @@ func (c *clusterCache) sync() error {
 
 // EnsureSynced checks cache state and synchronizes it if necessary
 func (c *clusterCache) EnsureSynced() error {
+		fmt.Printf("INSIDE EnsureSynced FUNCTION ")
+
 	syncStatus := &c.syncStatus
 
 	// first check if cluster is synced *without acquiring the full clusterCache lock*
@@ -957,6 +963,8 @@ func (c *clusterCache) EnsureSynced() error {
 }
 
 func (c *clusterCache) FindResources(namespace string, predicates ...func(r *Resource) bool) map[kube.ResourceKey]*Resource {
+			fmt.Printf("INSIDE FindResources FUNCTION ")
+
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 	result := map[kube.ResourceKey]*Resource{}
@@ -988,6 +996,8 @@ func (c *clusterCache) FindResources(namespace string, predicates ...func(r *Res
 
 // IterateHierarchy iterates resource tree starting from the specified top level resource and executes callback for each resource in the tree
 func (c *clusterCache) IterateHierarchy(key kube.ResourceKey, action func(resource *Resource, namespaceResources map[kube.ResourceKey]*Resource) bool) {
+				fmt.Printf("INSIDE IterateHierarchy FUNCTION ")
+
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 	if res, ok := c.resources[key]; ok {
@@ -1028,6 +1038,8 @@ func (c *clusterCache) IterateHierarchy(key kube.ResourceKey, action func(resour
 
 // IterateHierarchy iterates resource tree starting from the specified top level resources and executes callback for each resource in the tree
 func (c *clusterCache) IterateHierarchyV2(keys []kube.ResourceKey, action func(resource *Resource, namespaceResources map[kube.ResourceKey]*Resource) bool) {
+					fmt.Printf("INSIDE IterateHierarchyV2 FUNCTION ")
+
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 	keysPerNamespace := make(map[string][]kube.ResourceKey)
@@ -1232,6 +1244,8 @@ func (c *clusterCache) GetManagedLiveObjs(targetObjs []*unstructured.Unstructure
 }
 
 func (c *clusterCache) processEvent(event watch.EventType, un *unstructured.Unstructured) {
+						fmt.Printf("INSIDE processEvent FUNCTION ")
+
 	for _, h := range c.getEventHandlers() {
 		h(event, un)
 	}
